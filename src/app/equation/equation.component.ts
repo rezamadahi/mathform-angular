@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import {AbstractControl, FormControl, FormGroup} from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {delay, filter} from 'rxjs/operators';
+import {FormControl, FormGroup} from '@angular/forms';
+import {MathValidators} from '../math-validators';
 
 @Component({
   selector: 'app-equation',
@@ -7,22 +9,15 @@ import {AbstractControl, FormControl, FormGroup} from '@angular/forms';
   styleUrls: ['./equation.component.css']
 })
 export class EquationComponent implements OnInit {
+  secondPerSolution = 0;
   mathForm = new FormGroup({
     a: new FormControl(this.randomNumber()),
     b: new FormControl(this.randomNumber()),
     answer: new FormControl(''),
-  }, [
-    (form: AbstractControl) => {
-    const { a, b, answer } = form.value;
-      if (a + b === parseInt(answer)) {
-        return null;
-      } else {
-        return { addition: true };
-      }
-    }
-  ]);
+  }, [MathValidators.addition('answer', 'a', 'b')]);
 
-  constructor() { }
+  constructor() {
+  }
 
   get a() {
     return this.mathForm.value.a;
@@ -33,10 +28,35 @@ export class EquationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const startTime = new Date();
+    let numberSolved = 0;
+
+    this.mathForm.statusChanges.pipe(
+      filter(value => value === 'VALID'),
+      delay(100)
+    ).subscribe(() => {
+      numberSolved++;
+      this.secondPerSolution = (
+        new Date().getTime() - startTime.getTime()
+      )/ numberSolved / 1000;
+      this.mathForm.patchValue({
+        a: this.randomNumber(),
+        b: this.randomNumber(),
+        answer: ''
+      });
+    });
   }
 
   randomNumber() {
-    return Math.floor(Math.random() * 10 );
+    return Math.floor(Math.random() * 10);
   }
+
+  // onChangeInput() {
+  //   if (this.mathForm.valid) {
+  //     this.mathForm.controls.a.setValue(this.randomNumber());
+  //     this.mathForm.controls.b.setValue(this.randomNumber());
+  //     this.mathForm.controls.answer.setValue('');
+  //   }
+  // }
 
 }
