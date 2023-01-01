@@ -2,13 +2,13 @@
   <div class="equation">
     {{ a }} + {{ b }} =
   </div>
-  <input formControlName="answer"  >
+  <input formControlName="answer" appAnswerHighlight  >
 </form>
 
 <div class="stats">
   {{ secondPerSolution | number: '1.1-3' }}
 </div>
 
-<div>form is valid: {{ mathForm.valid }}</div>
-<div>form value is: {{ mathForm.value | json }}</div>
-<div>form errors is: {{ mathForm.errors | json }}</div>
+<!--<div>form is valid: {{ mathForm.valid }}</div>-->
+<!--<div>form value is: {{ mathForm.value | json }}</div>-->
+<!--<div>form errors is: {{ mathForm.errors | json }}</div>-->
